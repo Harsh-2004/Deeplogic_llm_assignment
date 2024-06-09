@@ -136,3 +136,94 @@ Generates a response to a user query using OpenAI's GPT model.
 - [PyMuPDF](https://pymupdf.readthedocs.io)
 - [Pytesseract](https://github.com/madmaze/pytesseract)
 - [NLTK](https://www.nltk.org)
+# OpenAI Translator- Task_2_translator README
+
+## Overview
+
+This project is a web-based translation application built using Gradio and OpenAI's GPT-3.5-turbo model. The application allows users to translate text between various languages, polish text in the same language, and provides a user-friendly interface for seamless interaction.
+
+## Setup and Installation
+
+### Prerequisites
+
+- Python 3.7 or higher
+- OpenAI API key
+- Required Python packages (listed below)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-repo/openai-translator.git
+   cd openai-translator
+   ```
+
+2. **Install required Python packages:**
+   ```bash
+   pip install openai gradio
+   ```
+
+3. **Set up your OpenAI API key:**
+   - Store your OpenAI API key in an environment variable:
+     ```bash
+     export OPENAI_API_KEY='your-openai-api-key'
+     ```
+
+## Running the Application
+
+Run the application using the following command:
+```bash
+python app.py
+```
+
+## Features
+
+### 1. Language Support
+- Supports a wide range of languages for translation.
+- Languages include English, Chinese (Simplified and Traditional), Spanish, French, German, Japanese, and many more.
+
+### 2. Text Translation
+- Automatically detects the source language (or you can specify it).
+- Translates text to the target language specified by the user.
+
+### 3. Text Polishing
+- If the source and target languages are the same, the application will polish the text instead of translating it.
+
+### 4. User Interface
+- Built with Gradio for an interactive and user-friendly experience.
+- Input and output text boxes for entering text and viewing translated/polished text.
+- Dropdown menus for selecting source and target languages.
+- Button to trigger the translation/polishing process.
+
+### 5. API Key Management
+- Allows users to enter their own OpenAI API key or use a default one set in the environment variables.
+
+## Code Structure
+
+```plaintext
+openai-translator/
+│
+├── app.py                 # Main application script
+├── requirements.txt       # List of required Python packages
+├── README.md              # Project documentation
+```
+
+## Functions
+
+### `submit_message(detectFrom, detectTo, user_token, prompt)`
+Handles the translation/polishing process. It takes the source and target languages, user token, and input prompt as arguments and returns the translated or polished text using OpenAI's GPT-3.5-turbo model.
+
+## Usage
+
+1. **Open the web application** by running the script.
+2. **Select the source and target languages** from the dropdown menus.
+3. **Enter the text** you want to translate or polish in the input text box.
+4. **Press the "Translate" button** to get the translated or polished text in the output text box.
+5. **Optionally, enter your OpenAI API key** in the provided textbox to use your key instead of the default one.
+
+
+## Acknowledgements
+
+- [OpenAI](https://www.openai.com)
+- [Gradio](https://www.gradio.app)
+
