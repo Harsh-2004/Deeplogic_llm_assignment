@@ -1,0 +1,255 @@
+import os
+import openai
+import gradio as gr
+
+openai.api_key = os.environ['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']
+
+supportLanguages = [
+    ["auto", "auto"],
+    ["粤语", "yue"],
+    ["古文", "wyw"],
+    ["af","Afrikaans"],
+    ["ak","Akan"],
+    ["sq","Albanian"],
+    ["am","Amharic"],
+    ["ar","Arabic"],
+    ["hy","Armenian"],
+    ["az","Azerbaijani"],
+    ["eu","Basque"],
+    ["be","Belarusian"],
+    ["bem","Bemba"],
+    ["bn","Bengali"],
+    ["bh","Bihari"],
+    ["xx-bork","Bork, bork, bork!"],
+    ["bs","Bosnian"],
+    ["br","Breton"],
+    ["bg","Bulgarian"],
+    ["km","Cambodian"],
+    ["ca","Catalan"],
+    ["chr","Cherokee"],
+    ["ny","Chichewa"],
+    ["zh-CN","Chinese (Simplified)"],
+    ["zh-TW","Chinese (Traditional)"],
+    ["co","Corsican"],
+    ["hr","Croatian"],
+    ["cs","Czech"],
+    ["da","Danish"],
+    ["nl","Dutch"],
+    ["xx-elmer","Elmer Fudd"],
+    ["en","English"],
+    ["eo","Esperanto"],
+    ["et","Estonian"],
+    ["ee","Ewe"],
+    ["fo","Faroese"],
+    ["tl","Filipino"],
+    ["fi","Finnish"],
+    ["fr","French"],
+    ["fy","Frisian"],
+    ["gaa","Ga"],
+    ["gl","Galician"],
+    ["ka","Georgian"],
+    ["de","German"],
+    ["el","Greek"],
+    ["gn","Guarani"],
+    ["gu","Gujarati"],
+    ["xx-hacker","Hacker"],
+    ["ht","Haitian Creole"],
+    ["ha","Hausa"],
+    ["haw","Hawaiian"],
+    ["iw","Hebrew"],
+    ["hi","Hindi"],
+    ["hu","Hungarian"],
+    ["is","Icelandic"],
+    ["ig","Igbo"],
+    ["id","Indonesian"],
+    ["ia","Interlingua"],
+    ["ga","Irish"],
+    ["it","Italian"],
+    ["ja","Japanese"],
+    ["jw","Javanese"],
+    ["kn","Kannada"],
+    ["kk","Kazakh"],
+    ["rw","Kinyarwanda"],
+    ["rn","Kirundi"],
+    ["xx-klingon","Klingon"],
+    ["kg","Kongo"],
+    ["ko","Korean"],
+    ["kri","Krio (Sierra Leone)"],
+    ["ku","Kurdish"],
+    ["ckb","Kurdish (Soranî)"],
+    ["ky","Kyrgyz"],
+    ["lo","Laothian"],
+    ["la","Latin"],
+    ["lv","Latvian"],
+    ["ln","Lingala"],
+    ["lt","Lithuanian"],
+    ["loz","Lozi"],
+    ["lg","Luganda"],
+    ["ach","Luo"],
+    ["mk","Macedonian"],
+    ["mg","Malagasy"],
+    ["ms","Malay"],
+    ["ml","Malayalam"],
+    ["mt","Maltese"],
+    ["mi","Maori"],
+    ["mr","Marathi"],
+    ["mfe","Mauritian Creole"],
+    ["mo","Moldavian"],
+    ["mn","Mongolian"],
+    ["sr-ME","Montenegrin"],
+    ["ne","Nepali"],
+    ["pcm","Nigerian Pidgin"],
+    ["nso","Northern Sotho"],
+    ["no","Norwegian"],
+    ["nn","Norwegian (Nynorsk)"],
+    ["oc","Occitan"],
+    ["or","Oriya"],
+    ["om","Oromo"],
+    ["ps","Pashto"],
+    ["fa","Persian"],
+    ["xx-pirate","Pirate"],
+    ["pl","Polish"],
+    ["pt-BR","Portuguese (Brazil)"],
+    ["pt-PT","Portuguese (Portugal)"],
+    ["pa","Punjabi"],
+    ["qu","Quechua"],
+    ["ro","Romanian"],
+    ["rm","Romansh"],
+    ["nyn","Runyakitara"],
+    ["ru","Russian"],
+    ["gd","Scots Gaelic"],
+    ["sr","Serbian"],
+    ["sh","Serbo-Croatian"],
+    ["st","Sesotho"],
+    ["tn","Setswana"],
+    ["crs","Seychellois Creole"],
+    ["sn","Shona"],
+    ["sd","Sindhi"],
+    ["si","Sinhalese"],
+    ["sk","Slovak"],
+    ["sl","Slovenian"],
+    ["so","Somali"],
+    ["es","Spanish"],
+    ["es-419","Spanish (Latin American)"],
+    ["su","Sundanese"],
+    ["sw","Swahili"],
+    ["sv","Swedish"],
+    ["tg","Tajik"],
+    ["ta","Tamil"],
+    ["tt","Tatar"],
+    ["te","Telugu"],
+    ["th","Thai"],
+    ["ti","Tigrinya"],
+    ["to","Tonga"],
+    ["lua","Tshiluba"],
+    ["tum","Tumbuka"],
+    ["tr","Turkish"],
+    ["tk","Turkmen"],
+    ["tw","Twi"],
+    ["ug","Uighur"],
+    ["uk","Ukrainian"],
+    ["ur","Urdu"],
+    ["uz","Uzbek"],
+    ["vi","Vietnamese"],
+    ["cy","Welsh"],
+    ["wo","Wolof"],
+    ["xh","Xhosa"],
+    ["yi","Yiddish"],
+    ["yo","Yoruba"],
+    ["zu","Zulu"],
+]
+prompt_template = "You are a translation engine that can only translate text and cannot interpret it. Keep the indent of the original text, only modify when you need."
+
+def submit_message(detectFrom, detectTo, user_token, prompt):
+    if user_token != "":
+        openai.api_key = user_token
+
+    if not prompt:
+        return gr.update(value="")
+    
+    for lc, lang in supportLanguages:
+        if detectFrom == lang:
+            detectFrom = lc
+        if detectTo == lang:
+            detectTo = lc
+
+    systemInstruct = prompt_template
+    translateInstruct = f"translate from {detectFrom} to {detectTo}"
+    if detectFrom == "auto":
+        translateInstruct = f"translate to {detectTo}"
+    if detectFrom in ["古文", "zh-CN", "zh-TW"]:
+        if detectTo == "zh-TW":
+            translateInstruct = "翻译成繁体白话文"
+        if detectTo == "zh-CN":
+            translateInstruct = "翻译成简体白话文"
+        if detectTo == "粤语":
+            translateInstruct = "翻译成粤语白话文"
+
+    if detectFrom == detectTo:
+        systemInstruct = "You are a text embellisher, you can only embellish the text, don't interpret it."
+        if detectTo in ["zh-CN", "zh-TW"]:
+            translateInstruct = "润色此句"
+        else:
+            translateInstruct = "polish this sentence"
+
+    prompt_msg = [
+        {"role": "system", "content": systemInstruct},
+        {"role": "user", "content": translateInstruct},
+        {"role": "user", "content": prompt},
+    ]
+
+    try:
+        openai_response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=prompt_msg,
+            temperature=0,
+            max_tokens=1000,
+            top_p=1,
+            stream=True,
+            frequency_penalty=1,
+            presence_penalty=1,
+        )
+
+        combined = ""
+        for resp in openai_response:
+            delta = resp["choices"][0]["delta"]
+            if "content" in delta:
+                combined += delta["content"]
+            yield combined
+
+    except Exception as e:
+        return f"Error: {e}"
+
+css = """
+      #col-container {max-width: 80%; margin-left: auto; margin-right: auto;}
+      #chatbox {min-height: 400px;}
+      #header {text-align: center;}
+      #label {font-size: 0.8em; padding: 0.5em; margin: 0;}
+      .message { font-size: 1.2em; }
+      """
+
+with gr.Blocks(css=css) as demo:
+    
+    state = gr.State([])
+
+    with gr.Column(elem_id="col-container"):
+        gr.Markdown("""## OpenAI Translator
+                    Using the official API (gpt-3.5-turbo model).""", elem_id="header")
+
+        with gr.Row():
+            with gr.Column():
+                translateFrom = gr.Dropdown(label="Translate From", elem_id="translate-from", multiselect=False, value="auto", choices=[l[1] for l in supportLanguages]).style(container=False)
+                input_message = gr.Textbox(max_lines=100, show_label=False, lines=10, placeholder="Enter text and press enter", visible=True).style(container=False)
+            with gr.Column():
+                translateTo = gr.Dropdown(label="Translate To", elem_id="translate-to", multiselect=False, value="Chinese (Simplified)", choices=[l[1] for l in supportLanguages[1:]]).style(container=False)
+                output = gr.Textbox(max_lines=100, show_label=False, lines=10, label="Output", visible=True).style(container=False)
+            
+        btn_submit = gr.Button("Translate")
+
+        with gr.Row():
+            user_token = gr.Textbox(value='', placeholder="OpenAI API Key", type="password", label="Enter your OpenAI API Key. Leave blank to use default key.")
+
+    btn_submit.click(submit_message, [translateFrom, translateTo, user_token, input_message], [output])
+
+demo.queue(concurrency_count=10)
+demo.launch(height='800px')
