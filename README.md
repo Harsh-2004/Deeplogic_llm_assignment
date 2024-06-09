@@ -136,7 +136,3 @@ Generates a response to a user query using OpenAI's GPT model.
 - [PyMuPDF](https://pymupdf.readthedocs.io)
 - [Pytesseract](https://github.com/madmaze/pytesseract)
 - [NLTK](https://www.nltk.org)
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
